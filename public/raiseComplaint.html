@@ -604,7 +604,7 @@
 
                 // Send the data to the backend
                 $.ajax({
-                    url: 'http://localhost:3000/submit-complaint',
+                    url: '/submit-complaint',
                     method: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify(complaintData),
