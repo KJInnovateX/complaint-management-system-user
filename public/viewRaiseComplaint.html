@@ -506,7 +506,7 @@
         async function fetchComplaints(search = '', status = '') {
             try {
                 // Build query parameters for search and status
-                const url = new URL(`http://localhost:3000/get-complaints/${companyId}`);
+                const url = new URL(`/get-complaints/${companyId}`);
                 if (search) url.searchParams.append('search', search);
                 if (status) url.searchParams.append('status', status);
 
@@ -616,7 +616,7 @@
 
         function proccedWithdrawComplaint(complaintId) {
             // Send a request to the server to update the complaint status
-            fetch(`http://localhost:3000/complaints/${complaintId}/withdraw`, {
+            fetch(`/complaints/${complaintId}/withdraw`, {
                 method: 'PATCH', // Using PATCH as we're updating a resource
                 headers: {
                     'Content-Type': 'application/json'
