@@ -1,0 +1,643 @@
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>
+        Dashboard
+    </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+    <style>
+        body {
+            min-height: 100vh;
+            background: #eef5fe;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 270px;
+            background: #fff;
+            padding: 60px 10px 15px 10px;
+            box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+            z-index: 100;
+        }
+
+        .sidebar.close {
+            width: 75px;
+        }
+
+        .logo_items {
+            gap: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo_name {
+            font-size: 22px;
+            color: #333;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.close .logo_name,
+        .sidebar.close #lock-icon,
+        .sidebar.close #sidebar-close {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #lock-icon,
+        #sidebar-close {
+            padding: 10px;
+            font-size: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #lock-icon {
+            color: #ff0000;
+            transition: color 0.3s ease;
+        }
+
+        #sidebar-close {
+            display: none;
+            color: #333;
+        }
+
+        .menu_container {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            margin-top: 40px;
+            overflow-y: auto;
+            height: calc(100% - 82px);
+        }
+
+        .menu_container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .menu_title {
+            position: relative;
+            height: 50px;
+            width: 55px;
+        }
+
+        .menu_title .title {
+            margin-left: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.close .title {
+            opacity: 0;
+        }
+
+        .menu_title .line {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 3px;
+            width: 20px;
+            border-radius: 25px;
+            background: #aaa;
+            transition: all 0.3s ease;
+        }
+
+        .menu_title .line {
+            opacity: 0;
+        }
+
+        .sidebar.close .line {
+            opacity: 1;
+        }
+
+        .item {
+            list-style: none;
+        }
+
+        .link {
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            color: #707070;
+            display: flex;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .link:hover {
+            color: #fff;
+            background-color: #4070f4;
+        }
+
+        .link span {
+            white-space: nowrap;
+            margin-left: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .link i {
+            font-size: 28px;
+        }
+
+        .sidebar.close .link span {
+            opacity: 0;
+        }
+
+        .sidebar_profile {
+            padding-top: 15px;
+            margin-top: 15px;
+            gap: 15px;
+            border-top: 2px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar_profile .name {
+            font-size: 18px;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar_profile .email {
+            font-size: 15px;
+            color: #333;
+        }
+
+        .sidebar.close .sidebar_profile .name {
+            opacity: 0;
+        }
+
+        .navbar {
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: #fff;
+            padding: 10px 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 500;
+        }
+
+        .navbar .company_info {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar .company_info img {
+            height: 40px;
+            width: 40px;
+            margin-right: 10px;
+            border-radius: 50%;
+        }
+
+        .navbar .company_info span {
+            font-size: 22px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .search_box {
+            height: 46px;
+            max-width: 500px;
+            width: 100%;
+            border: 1px solid #aaa;
+            outline: none;
+            border-radius: 8px;
+            padding: 0 15px;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .search_box::placeholder {
+            color: #aaa;
+        }
+
+        .navbar .search_box {
+            background: #fff;
+            border: none;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-container {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .form-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .form-container::-webkit-scrollbar-thumb {
+            background-color: #ccc;
+            border-radius: 4px;
+        }
+
+        .form-container::-webkit-scrollbar-thumb:hover {
+            background-color: #aaa;
+        }
+
+        @media screen and (max-width: 1100px) {
+            .navbar {
+                left: 65%;
+            }
+        }
+
+        @media screen and (max-width: 800px) {
+            .sidebar {
+                left: -100%;
+                z-index: 1000;
+            }
+
+            .sidebar.close {
+                left: -100%;
+            }
+
+            #sidebar-close {
+                display: block;
+            }
+
+            #lock-icon {
+                display: none;
+            }
+
+            .navbar {
+                left: 0;
+                max-width: 100%;
+                transform: translateX(0%);
+            }
+
+            #sidebar-open {
+                display: block;
+            }
+
+            .search_box {
+                max-width: 150px;
+            }
+        }
+
+        @media screen and (min-width: 801px) {
+            #sidebar-open {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-blue-50 flex overflow-auto">
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="company_info">
+            <img alt="Company Logo"
+                src="https://firebasestorage.googleapis.com/v0/b/tunnel-ac8de.appspot.com/o/icons%2FWhatsApp%20Image%202024-12-22%20at%2012.09.39_51027079%20(1).jpg?alt=media&token=6354ff03-99c8-493d-9a29-f20ea5fc8432" />
+            <span>
+                Mask Polymer Pvt. Ltd.
+            </span>
+        </div>
+        <input class="search_box" placeholder="Search..." type="text" />
+        <i class="bx bx-menu" id="sidebar-open" style="font-size: 24px; cursor: pointer;"></i>
+    </div>
+    <!-- Sidebar -->
+    <div class="sidebar hoverable">
+        <div class="logo_items flex">
+            <i class="bx bx-lock-open-alt" id="lock-icon" title="Lock Sidebar">
+            </i>
+            <i class="bx bx-x" id="sidebar-close">
+            </i>
+        </div>
+        <div class="menu_container">
+            <div class="menu_items">
+                <ul class="menu_item">
+                    <div class="menu_title flex">
+                        <span class="title">
+                            Explore
+                        </span>
+                        <span class="line">
+                        </span>
+                    </div>
+                    <li class="item">
+                        <a class="link flex" href="dashboard.html">
+                            <i class="fas fa-home text-gray-500">
+                            </i>
+                            <span>
+                                Dashboard
+                            </span>
+                        </a>
+                    </li>
+                    <li class="item">
+                        <a class="link flex" href="raiseComplaint.html">
+                            <i class="fas fa-exclamation-circle text-gray-500">
+                            </i>
+                            <span>
+                                Raise Complaint
+                            </span>
+                        </a>
+                    </li>
+                    <li class="item">
+                        <a class="link flex" href="viewRaiseComplaint.html">
+                            <i class="fas fa-eye text-gray-500">
+                            </i>
+                            <span>
+                                View Raised Complaints
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="sidebar_profile flex items-center">
+                <span class="nav_image">
+                    <img alt="User Profile" class="w-10 h-10 rounded-full" height="40"
+                        src="https://firebasestorage.googleapis.com/v0/b/tunnel-ac8de.appspot.com/o/icons%2Fprofile_user.jpg?alt=media&token=259b8271-6dca-4ae1-bf8a-747109187050"
+                        width="40" />
+                </span>
+                <div class="ml-4">
+                    <span class="name block text-gray-700 font-semibold">
+                        Karan Jadhav
+                    </span>
+                </div>
+            </div>
+            <div class="mt-2">
+                <a class="link flex items-center text-red-500" href="index.html">
+                    <i class="fas fa-sign-out-alt">
+                    </i>
+                    <span class="ml-2">
+                        Logout
+                    </span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- Main Content -->
+    <div class="flex-1 flex justify-center p-6 mt-5">
+        <div class="container mx-auto p-5 mt-6">
+            <div class="bg-white p-8 rounded-lg shadow-lg max-w-6xl mx-auto">
+                <header class="text-center mt-1 mb-5">
+                    <h1 class="text-3xl font-bold text-gray-800">Dashboard</h1>
+                </header>
+                <div class="overflow-auto">
+                    <section class="overview mb-8">
+                        <h2 class="text-xl font-semibold mb-4 text-gray-700">Overview</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div
+                                class="bg-gradient-to-r from-blue-300 via-blue-500 to-blue-700 p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 text-white">
+                                <h3 class="font-bold text-md">Complaints Overview</h3>
+                                <div class="flex justify-between items-center mt-2 space-x-2">
+                                    <div class="bg-white text-blue-700 p-2 rounded-lg shadow-md flex-1 text-center">
+                                        <p class="text-xs font-semibold">Total Raised</p>
+                                        <p id="total-complaints" class="text-xl font-semibold">0</p>
+                                    </div>
+                                    <div class="bg-white text-blue-700 p-2 rounded-lg shadow-md flex-1 text-center">
+                                        <p class="text-xs font-semibold">Total Resolved</p>
+                                        <p id="resolved-complaints" class="text-xl font-semibold">0</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div
+                                class="bg-gradient-to-r from-yellow-300 via-yellow-500 to-yellow-700 p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 text-white">
+                                <h3 class="font-bold text-md">Progress & Resolution</h3>
+                                <div class="flex justify-between items-center mt-2 space-x-2">
+                                    <div class="bg-white text-yellow-700 p-2 rounded-lg shadow-md flex-1 text-center">
+                                        <p class="text-xs font-semibold">In Progress</p>
+                                        <p id="in-progress-complaints" class="text-xl font-semibold">0</p>
+                                    </div>
+                                    <div class="bg-white text-purple-700 p-2 rounded-lg shadow-md flex-1 text-center">
+                                        <p class="text-xs font-semibold">Avg. Resolution Time</p>
+                                        <p id="avg-resolution-time" class="text-xl font-semibold">0 days</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="notifications mb-8">
+                        <h2 class="text-xl font-semibold mb-4 text-gray-700">Notifications</h2>
+                        <div class="bg-white p-4 max-h-[448px] rounded-lg shadow-md max-h-96 overflow-y-auto"
+                            id="notification-list">
+                            <div
+                                class="bg-green-100 p-4 rounded-lg shadow-md flex items-center justify-between border-l-4 border-green-500 mb-4">
+                                <div>
+                                    <p class="text-sm font-semibold">Complaint Resolved</p>
+                                    <p class="text-gray-600">Your complaint 1029 has been resolved.</p>
+                                    <p class="text-xs text-gray-500">Date: 2024-01-02</p>
+                                </div>
+                            </div>
+                            <div
+                                class="bg-yellow-100 p-4 rounded-lg shadow-md flex items-center justify-between border-l-4 border-yellow-500 mb-4">
+                                <div>
+                                    <p class="text-sm font-semibold">Complaint In Progress</p>
+                                    <p class="text-gray-600">Your complaint 1019 is in progress.</p>
+                                    <p class="text-xs text-gray-500">Date: 2024-01-03</p>
+                                </div>
+                            </div>
+                            <div
+                                class="bg-green-100 p-4 rounded-lg shadow-md flex items-center justify-between border-l-4 border-green-500 mb-4">
+                                <div>
+                                    <p class="text-sm font-semibold">Complaint Resolved</p>
+                                    <p class="text-gray-600">Your complaint 1009 has been resolved.</p>
+                                    <p class="text-xs text-gray-500">Date: 2024-01-07</p>
+                                </div>
+                            </div>
+                            <div
+                                class="bg-red-100 p-4 rounded-lg shadow-md flex items-center justify-between border-l-4 border-red-500 mb-4">
+                                <div>
+                                    <p class="text-sm font-semibold">Complaint Pending</p>
+                                    <p class="text-gray-600">Your complaint 1012 is pending.</p>
+                                    <p class="text-xs text-gray-500">Date: 2024-01-04</p>
+                                </div>
+                            </div>
+                            <div
+                                class="bg-blue-100 p-4 rounded-lg shadow-md flex items-center justify-between border-l-4 border-blue-500 mb-4">
+                                <div>
+                                    <p class="text-sm font-semibold">Complaint Follow-Up</p>
+                                    <p class="text-gray-600">Your complaint 1009 has a follow-up from admin.</p>
+                                    <p class="text-xs text-gray-500">Date: 2024-01-06</p>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Selecting the sidebar and buttons
+            const sidebar = document.querySelector(".sidebar");
+            const sidebarOpenBtn = document.querySelector("#sidebar-open");
+            const sidebarCloseBtn = document.querySelector("#sidebar-close");
+            const sidebarLockBtn = document.querySelector("#lock-icon");
+
+            if (sidebarLockBtn) {
+                sidebarLockBtn.addEventListener("click", () => {
+                    sidebar.classList.toggle("locked");
+                    if (!sidebar.classList.contains("locked")) {
+                        sidebar.classList.add("hoverable");
+                        sidebarLockBtn.classList.replace("bx-lock-alt", "bx-lock-open-alt");
+
+                        // Change color to red for unlocked state
+                        sidebarLockBtn.style.color = "#ff0000";
+                    } else {
+                        sidebar.classList.remove("hoverable");
+                        sidebarLockBtn.classList.replace("bx-lock-open-alt", "bx-lock-alt");
+
+                        // Change color to green for locked state
+                        sidebarLockBtn.style.color = "#1aff00";
+                    }
+                });
+
+                // Set initial color based on the locked state
+                if (sidebar.classList.contains("locked")) {
+                    sidebarLockBtn.style.color = "#1aff00"; // Locked state
+                } else {
+                    sidebarLockBtn.style.color = "#ff0000"; // Unlocked state
+                }
+            }
+
+            if (sidebar) {
+                sidebar.addEventListener("mouseleave", () => {
+                    if (sidebar.classList.contains("hoverable")) {
+                        sidebar.classList.add("close");
+                    }
+                });
+
+                sidebar.addEventListener("mouseenter", () => {
+                    if (sidebar.classList.contains("hoverable")) {
+                        sidebar.classList.remove("close");
+                    }
+                });
+            }
+
+            if (sidebarOpenBtn) {
+                sidebarOpenBtn.addEventListener("click", () => {
+                    sidebar.classList.remove("close");
+                    sidebar.style.left = "0";
+                });
+            }
+
+            if (sidebarCloseBtn) {
+                sidebarCloseBtn.addEventListener("click", () => {
+                    sidebar.classList.add("close");
+                    sidebar.style.left = "-100%";
+                });
+            }
+        });
+
+        // Sample data for demonstration
+        const complaintsData = [
+            { id: 1, productName: "Product A", type: "Physical Defect", status: "Resolved", dateRaised: "2024-01-01", dateResolved: "2024-01-02" },
+            { id: 2, productName: "Product B", type: "Quality Issue", status: "In Progress", dateRaised: "2024-01-03" },
+            { id: 3, productName: "Product C", type: "Physical Defect", status: "Pending", dateRaised: "2024-01-04" },
+            { id: 4, productName: "Product A", type: "Quality Issue", status: "Follow-Up", dateRaised: "2024-01-05", dateResolved: "2024-01-06" },
+            { id: 5, productName: "Product A", type: "Quality Issue", status: "Resolved", dateRaised: "2024-01-06", dateResolved: "2024-01-07" },
+        ];
+
+        // Function to populate notification list
+
+
+        // Function to populate notification list
+        function populateNotificationList() {
+            const notifications = [
+                { title: "Complaint Resolved", message: "Your complaint 1009 has been resolved.", date: "2024-01-02", status: "Resolved" },
+                { title: "Complaint In Progress", message: "Your complaint 1019 is in progress.", date: "2024-01-03", status: "In Progress" },
+                { title: "Complaint Pending", message: "Your complaint 1015 is pending.", date: "2024-01-04", status: "Pending" },
+                { title: "Complaint Follow-Up", message: "Your complaint 1009 has a follow-up from admin.", date: "2024-01-06", status: "Follow-Up" },
+                { title: "Complaint Resolved", message: "Your complaint 1054 has been resolved.", date: "2024-01-07", status: "Resolved" },
+            ];
+
+            const notificationList = document.getElementById('notification-list');
+            notificationList.innerHTML = ''; // Clear existing notifications
+            notifications.forEach(notification => {
+                const notificationItem = document.createElement('div');
+                notificationItem.classList.add('p-4', 'rounded-lg', 'shadow-md', 'flex', 'items-center', 'justify-between', 'border-l-4', 'mb-4');
+                if (notification.status === 'Resolved') {
+                    notificationItem.classList.add('bg-green-100', 'border-green-500');
+                } else if (notification.status === 'In Progress') {
+                    notificationItem.classList.add('bg-yellow-100', 'border-yellow-500');
+                } else if (notification.status === 'Pending') {
+                    notificationItem.classList.add('bg-red-100', 'border-red-500');
+                } else if (notification.status === 'Follow-Up') {
+                    notificationItem.classList.add('bg-blue-100', 'border-blue-500');
+                }
+                notificationItem.innerHTML = `
+                    <div>
+                        <p class="text-sm font-semibold">${notification.title}</p>
+                        <p class="text-gray-600">${notification.message}</p>
+                        <p class="text-xs text-gray-500">Date: ${notification.date}</p>
+                    </div>
+                `;
+                notificationList.appendChild(notificationItem);
+            });
+        }
+
+        // Function to update overview statistics
+        function updateOverview() {
+            const totalComplaints = complaintsData.length;
+            const resolvedComplaints = complaintsData.filter(c => c.status === 'Resolved').length;
+            const inProgressComplaints = complaintsData.filter(c => c.status === 'In Progress').length;
+            const pendingComplaints = complaintsData.filter(c => c.status === 'Pending').length;
+            const followUpComplaints = complaintsData.filter(c => c.status === 'Follow-Up').length;
+            const avgResolutionTime = resolvedComplaints > 0 ?
+                (complaintsData.reduce((acc, c) => acc + (c.dateResolved ? 1 : 0), 0) / resolvedComplaints).toFixed(2) : 0;
+
+            document.getElementById('total-complaints').innerText = totalComplaints;
+            document.getElementById('resolved-complaints').innerText = resolvedComplaints;
+            document.getElementById('in-progress-complaints').innerText = inProgressComplaints;
+            document.getElementById('avg-resolution-time').innerText = `${avgResolutionTime} days`;
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+             // Hardcoded for now; replace this with dynamic logic if required.
+            
+            const companyId = localStorage.getItem('companyId');
+
+            // Function to fetch dashboard data
+            async function fetchDashboardData() {
+                try {
+                    const response = await fetch(`http://localhost:3000/dashboard-data/${companyId}`);
+                    const data = await response.json();
+
+                    // Update dashboard values
+                    document.getElementById('total-complaints').innerText = data.totalRaised;
+                    document.getElementById('resolved-complaints').innerText = data.totalResolved;
+                    document.getElementById('in-progress-complaints').innerText = data.totalPendingInProgress;
+                    document.getElementById('avg-resolution-time').innerText = `${data.avgResolutionTime} days`;
+                } catch (error) {
+                    console.error('Error fetching dashboard data:', error);
+                }
+            }
+
+            // Initialize the dashboard
+            function initDashboard() {
+                fetchDashboardData();
+                populateNotificationList(); // Call other functions as needed
+            }
+
+            // Call the init function on page load
+            window.onload = initDashboard;
+        });
+
+
+        // Initialize the dashboard
+       // function initDashboard() {
+         //   populateNotificationList();
+           // updateOverview();
+        //}
+
+        // Call the init function on page load
+      //  window.onload = initDashboard;
+    </script>
+</body>
+
+</html>

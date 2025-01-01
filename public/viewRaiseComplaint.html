@@ -1,0 +1,708 @@
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+    <style>
+        body {
+            min-height: 100vh;
+            background: #eef5fe;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 270px;
+            background: #fff;
+            padding: 60px 10px 15px 10px;
+            box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+            z-index: 100;
+        }
+
+        .sidebar.close {
+            width: 75px;
+        }
+
+        .logo_items {
+            gap: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo_name {
+            font-size: 22px;
+            color: #333;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.close .logo_name,
+        .sidebar.close #lock-icon,
+        .sidebar.close #sidebar-close {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #lock-icon,
+        #sidebar-close {
+            padding: 10px;
+            font-size: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #lock-icon {
+            color: #ff0000;
+            transition: color 0.3s ease;
+        }
+
+        #sidebar-close {
+            display: none;
+            color: #333;
+        }
+
+        .menu_container {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            margin-top: 40px;
+            overflow-y: auto;
+            height: calc(100% - 82px);
+        }
+
+        .menu_container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .menu_title {
+            position: relative;
+            height: 50px;
+            width: 55px;
+        }
+
+        .menu_title .title {
+            margin-left: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.close .title {
+            opacity: 0;
+        }
+
+        .menu_title .line {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 3px;
+            width: 20px;
+            border-radius: 25px;
+            background: #aaa;
+            transition: all 0.3s ease;
+        }
+
+        .menu_title .line {
+            opacity: 0;
+        }
+
+        .sidebar.close .line {
+            opacity: 1;
+        }
+
+        .item {
+            list-style: none;
+        }
+
+        .link {
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            color: #707070;
+            display: flex;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .link:hover {
+            color: #fff;
+            background-color: #4070f4;
+        }
+
+        .link span {
+            white-space: nowrap;
+            margin-left: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .link i {
+            font-size: 28px;
+        }
+
+        .sidebar.close .link span {
+            opacity: 0;
+        }
+
+        .sidebar_profile {
+            padding-top: 15px;
+            margin-top: 15px;
+            gap: 15px;
+            border-top: 2px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar_profile .name {
+            font-size: 18px;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar_profile .email {
+            font-size: 15px;
+            color: #333;
+        }
+
+        .sidebar.close .sidebar_profile .name {
+            opacity: 0;
+        }
+
+        .navbar {
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: #fff;
+            padding: 10px 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 500;
+        }
+
+        .navbar .company_info {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar .company_info img {
+            height: 40px;
+            width: 40px;
+            margin-right: 10px;
+            border-radius: 50%;
+        }
+
+        .navbar .company_info span {
+            font-size: 22px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .search_box {
+            height: 46px;
+            max-width: 500px;
+            width: 100%;
+            border: 1px solid #aaa;
+            outline: none;
+            border-radius: 8px;
+            padding: 0 15px;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .search_box::placeholder {
+            color: #aaa;
+        }
+
+        .navbar .search_box {
+            background: #fff;
+            border: none;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-container {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .form-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .form-container::-webkit-scrollbar-thumb {
+            background-color: #ccc;
+            border-radius: 4px;
+        }
+
+        .form-container::-webkit-scrollbar-thumb:hover {
+            background-color: #aaa;
+        }
+
+        @media screen and (max-width: 1100px) {
+            .navbar {
+                left: 65%;
+            }
+        }
+
+        @media screen and (max-width: 800px) {
+            .sidebar {
+                left: -100%;
+                z-index: 1000;
+            }
+
+            .sidebar.close {
+                left: -100%;
+            }
+
+            #sidebar-close {
+                display: block;
+            }
+
+            #lock-icon {
+                display: none;
+            }
+
+            .navbar {
+                left: 0;
+                max-width: 100%;
+                transform: translateX(0%);
+            }
+
+            #sidebar-open {
+                display: block;
+            }
+
+            .search_box {
+                max-width: 150px;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+        }
+
+        @media screen and (min-width: 801px) {
+            #sidebar-open {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-blue-50 flex overflow-auto">
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="company_info">
+            <img alt="Company Logo"
+                src="https://firebasestorage.googleapis.com/v0/b/tunnel-ac8de.appspot.com/o/icons%2FWhatsApp%20Image%202024-12-22%20at%2012.09.39_51027079%20(1).jpg?alt=media&token=6354ff03-99c8-493d-9a29-f20ea5fc8432" />
+                <span>Mask Polymer Pvt. Ltd.</span>
+        </div>
+        <input class="search_box" placeholder="Search..." type="text" />
+        <i class="bx bx-menu" id="sidebar-open" style="font-size: 24px; cursor: pointer;"></i>
+    </div>
+    <!-- Sidebar -->
+    <div class="sidebar hoverable">
+        <div class="logo_items flex">
+            <i class="bx bx-lock-open-alt" id="lock-icon" title="Lock Sidebar"></i>
+            <i class="bx bx-x" id="sidebar-close"></i>
+        </div>
+        <div class="menu_container">
+            <div class="menu_items">
+                <ul class="menu_item">
+                    <div class="menu_title flex">
+                        <span class="title">Explore</span>
+                        <span class="line"></span>
+                    </div>
+                    <li class="item">
+                        <a class="link flex" href="dashboard.html">
+                            <i class="fas fa-home text-gray-500"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="item">
+                        <a class="link flex" href="raiseComplaint.html">
+                            <i class="fas fa-exclamation-circle text-gray-500"></i>
+                            <span>Raise Complaint</span>
+                        </a>
+                    </li>
+                    <li class="item">
+                        <a class="link flex" href="viewRaiseComplaint.html">
+                            <i class="fas fa-eye text-gray-500"></i>
+                            <span>View Raised Complaints</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="sidebar_profile flex items-center">
+                <span class="nav_image">
+                    <img alt="User Profile" class="w-10 h-10 rounded-full" height="40" src="https://firebasestorage.googleapis.com/v0/b/tunnel-ac8de.appspot.com/o/icons%2Fprofile_user.jpg?alt=media&token=259b8271-6dca-4ae1-bf8a-747109187050" width="40" />
+                </span>
+                <div class="ml-4">
+                    <span class="name block text-gray-700 font-semibold">Karan Jadhav</span>
+                </div>
+            </div>
+            <div class="mt-2">
+                <a class="link flex items-center text-red-500" href="index.html">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span class="ml-2">Logout</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- Main Content -->
+    <div class="flex-1 flex justify-center p-6 mt-5">
+        <div class="bg-white shadow-lg rounded-lg p-6 w-full max-w-5xl mt-10">
+            <h2 class="text-3xl font-bold mb-6 text-center text-blue-600">Raised Complaints</h2>
+            <!-- Search and Filter Section -->
+            <div class="mb-4 flex justify-between">
+                <input class="border border-gray-300 rounded-md p-2 w-1/2 focus:outline-none focus:ring-2 focus:ring-blue-500" id="searchInput" placeholder="Search by Complaint ID/Product Name" type="text" />
+                <select class="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500" id="statusFilter">
+                    <option value="">Filter by Status</option>
+                    <option value="Pending">Pending</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Resolved">Resolved</option>
+                    <option value="Withdrawn">Withdrawn</option>
+                </select>
+            </div>
+            <!-- Complaints Table -->
+            <div class="table-container max-h-[420px] overflow-y-auto border border-gray-300 rounded-lg">
+                <table class="min-w-full bg-white text-center border-collapse">
+                    <thead class="bg-gray-200 sticky top-0">
+                        <tr>
+                            <th class="px-4 py-2 text-left">Complaint ID</th>
+                            <th class="px-4 py-2 text-left">Product</th>
+                            <th class="px-4 py-2 text-left">Reason</th>
+                            <th class="px-4 py-2 text-left">Date</th>
+                            <th class="px-4 py-2 text-left">Status</th>
+                            <th class="px-4 py-2 text-left">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="overflow-y-auto min-h-full" id="complaintTableBody">
+                        <!-- Add more rows as needed -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Modal for Viewing Details -->
+        <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden transition-opacity duration-300" id="detailsModal">
+            <div class="bg-white rounded-lg shadow-lg p-6 w-11/12 max-w-3xl transform transition-transform duration-300 scale-95 opacity-0 animate-fadeIn">
+                <h3 class="text-2xl font-bold mb-4 text-blue-600">Complaint Details</h3>
+                <div class="space-y-4" id="modalContent">
+                    <!-- Detailed complaint information will be populated here -->
+                </div>
+                <div class="flex justify-end">
+                    <button class="mt-4 bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow hover:bg-blue-700 transition duration-200" onclick="closeModal()">Close</button>
+                </div>
+            </div>
+        </div>
+        <!-- Confirmation Modal -->
+        <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden transition-opacity duration-300" id="withdrawConfirmationModal">
+            <div class="bg-white rounded-lg shadow-lg p-6 w-11/12 max-w-md transform transition-transform duration-300 scale-95 opacity-0 animate-fadeIn">
+                <div class="flex items-center mb-4">
+                    <svg class="w-10 h-10 text-red-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm1 15h-2v-2h2v2zm0-4h-2V5h2v6z" />
+                    </svg>
+                    <h3 class="text-xl font-bold text-red-600">Confirm Withdrawal</h3>
+                </div>
+                <p>Are you sure you want to withdraw this complaint? This action cannot be undone.</p>
+                <div class="flex justify-end mt-4">
+                    <button class="bg-red-600 text-white font-bold py-2 px-4 rounded-lg shadow hover:bg-red-700 transition duration-200" id="confirmWithdraw">Confirm</button>
+                    <button class="ml-2 bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg shadow hover:bg-gray-400 transition duration-200" onclick="closeWithdrawModal()">Cancel</button>
+                </div>
+            </div>
+        </div>
+        <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden transition-opacity duration-300 z-1000" id="withdrawSuccessModal">
+            <div class="bg-white rounded-lg shadow-lg p-6 w-11/12 max-w-md transform transition-transform duration-300 scale-95 opacity-0 animate-fadeIn">
+                <div class="flex items-center mb-4">
+                    <svg class="w-10 h-10 mr-3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" fill="green" />
+                        <path d="M9 16.2l-4.5-4.5 1.4-1.4 3.1 3.1 7.6-7.6 1.4 1.4z" fill="white" />
+                    </svg>
+                    <h3 class="text-xl font-bold text-green-600">Withdrawal Successful</h3>
+                </div>
+                <p>Your complaint has been successfully withdrawn.</p>
+                <div class="flex justify-end mt-4">
+                    <button class="ml-2 bg-green-300 text-gray-800 font-bold py-2 px-4 rounded-lg shadow hover:bg-gray-400 transition duration-200" onclick="closeWithdrawSuccessModal()">Ok</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Selecting the sidebar and buttons
+            const sidebar = document.querySelector(".sidebar");
+            const sidebarOpenBtn = document.querySelector("#sidebar-open");
+            const sidebarCloseBtn = document.querySelector("#sidebar-close");
+            const sidebarLockBtn = document.querySelector("#lock-icon");
+
+            if (sidebarLockBtn) {
+                sidebarLockBtn.addEventListener("click", () => {
+                    sidebar.classList.toggle("locked");
+                    if (!sidebar.classList.contains("locked")) {
+                        sidebar.classList.add("hoverable");
+                        sidebarLockBtn.classList.replace("bx-lock-alt", "bx-lock-open-alt");
+
+                        // Change color to red for unlocked state
+                        sidebarLockBtn.style.color = "#ff0000";
+                    } else {
+                        sidebar.classList.remove("hoverable");
+                        sidebarLockBtn.classList.replace("bx-lock-open-alt", "bx-lock-alt");
+
+                        // Change color to green for locked state
+                        sidebarLockBtn.style.color = "#1aff00";
+                    }
+                });
+
+                // Set initial color based on the locked state
+                if (sidebar.classList.contains("locked")) {
+                    sidebarLockBtn.style.color = "#1aff00"; // Locked state
+                } else {
+                    sidebarLockBtn.style.color = "#ff0000"; // Unlocked state
+                }
+            }
+
+            if (sidebar) {
+                sidebar.addEventListener("mouseleave", () => {
+                    if (sidebar.classList.contains("hoverable")) {
+                        sidebar.classList.add("close");
+                    }
+                });
+
+                sidebar.addEventListener("mouseenter", () => {
+                    if (sidebar.classList.contains("hoverable")) {
+                        sidebar.classList.remove("close");
+                    }
+                });
+            }
+
+            if (sidebarOpenBtn) {
+                sidebarOpenBtn.addEventListener("click", () => {
+                    sidebar.classList.remove("close");
+                    sidebar.style.left = "0";
+                });
+            }
+
+            if (sidebarCloseBtn) {
+                sidebarCloseBtn.addEventListener("click", () => {
+                    sidebar.classList.add("close");
+                    sidebar.style.left = "-100%";
+                });
+            }
+        });
+
+        function follow_up(complaint_id){
+            window.location.href=`followUp.html?complaint_id=${complaint_id}`;
+        }
+
+        const companyId = localStorage.getItem('companyId');
+
+        async function fetchComplaints(search = '', status = '') {
+            try {
+                // Build query parameters for search and status
+                const url = new URL(`http://localhost:3000/get-complaints/${companyId}`);
+                if (search) url.searchParams.append('search', search);
+                if (status) url.searchParams.append('status', status);
+
+                const response = await fetch(url);
+                const complaints = await response.json();
+                const tableBody = document.getElementById('complaintTableBody');
+
+                tableBody.innerHTML = ''; // Clear existing rows
+
+                complaints.forEach((complaint) => {
+                    const row = document.createElement('tr');
+                    row.classList.add('hover:bg-gray-100', 'transition', 'duration-200');
+                    const d = new Date(complaint.created_at);
+                    // Format the date
+                    const options = {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        weekday: 'long'
+                    };
+                    const formattedDate = d.toLocaleDateString('en-US', options);
+
+                    console.log(complaint);
+                    row.innerHTML = `
+                    <td class="py-2 px-4 border-b">${complaint.id}</td>
+                    <td class="py-2 px-4 border-b">${complaint.product_name}</td>
+                    <td class="py-2 px-4 border-b">${complaint.complaint_type}</td>
+                    <td class="py-2 px-4 border-b">${formattedDate}</td>
+                    <td class="py-2 px-4 border-b ${complaint.status === 'Pending' ? 'text-yellow-500' :
+                            complaint.status === 'Resolved' ? 'text-green-500' :
+                                complaint.status === 'Withdrawn' ? 'text-gray-500' : 'text-blue-500'}">
+                        ${complaint.status}
+                    </td>
+                    <td class="py-2 px-4 border-b">
+                        <div class="flex space-x-2">
+                            <button
+                                class="bg-blue-600 text-white font-bold py-1 px-3 rounded-lg shadow hover:bg-blue-700 transition duration-200"
+                                data-complaint='${JSON.stringify(complaint)}'
+                                onclick="viewDetails('${complaint.id}', this)">
+                                 View Details</button>
+                            <button
+                                class="bg-red-600 text-white font-bold py-1 px-3 rounded-lg shadow hover:bg-red-700 transition duration-200"
+                                onclick="withdrawComplaint('${complaint.id}')">Withdraw</button>
+                            <button
+                                class="bg-green-600 text-white font-bold py-1 px-3 rounded-lg shadow hover:bg-green-700 transition duration-200"
+                                onclick="follow_up('${complaint.id}')">Follow Up</button>
+                        </div>
+                    </td>
+                `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error fetching complaints:', error);
+            }
+        }
+
+        // Add event listeners for search and filter
+        document.getElementById('searchInput').addEventListener('input', () => {
+            const searchValue = document.getElementById('searchInput').value;
+            const statusValue = document.getElementById('statusFilter').value;
+            fetchComplaints(searchValue, statusValue);
+        });
+
+        document.getElementById('statusFilter').addEventListener('change', () => {
+            const searchValue = document.getElementById('searchInput').value;
+            const statusValue = document.getElementById('statusFilter').value;
+            fetchComplaints(searchValue, statusValue);
+        });
+
+        // Call the function on page load
+        document.addEventListener('DOMContentLoaded', () => fetchComplaints());
+
+
+
+        function viewDetails(complaintId, element) {
+            const complaintData = element.getAttribute('data-complaint');
+            const complaint = JSON.parse(complaintData);
+            console.log(complaint);
+            const d = new Date(complaint.created_at);
+            // Format the date
+            const options = {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                weekday: 'long'
+            };
+            const formattedDate = d.toLocaleDateString('en-US', options);
+
+            if (complaintId) {
+                document.getElementById('modalContent').innerHTML = `
+                    <p><strong>Product ID:</strong> ${complaint.id}</p>
+                    <p><Strong>Company ID:</strong> ${complaint.company_id}</p>
+                    <p><strong>Product Name:</strong> ${complaint.product_name}</p>
+                    <p><strong>Complaint Type:</strong> ${complaint.complaint_type}</p>
+                    <p><strong>Primary Key Problem:</strong> ${complaint.key_problem}</p>
+                    <p><strong>Description of the Issue:</strong> ${complaint.issue_description}</p>
+                    <p><strong>Date of Issue Detection:</strong> ${formattedDate}</p>
+                `;
+                const modal = document.getElementById('detailsModal');
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.querySelector('.transform').classList.remove('scale-95', 'opacity-0');
+                    modal.querySelector('.transform').classList.add('scale-100', 'opacity-100');
+                }, 10);
+            }
+        }
+
+        function proccedWithdrawComplaint(complaintId) {
+            // Send a request to the server to update the complaint status
+            fetch(`http://localhost:3000/complaints/${complaintId}/withdraw`, {
+                method: 'PATCH', // Using PATCH as we're updating a resource
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status: 'Withdrawn' }) // Sending the new status
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json(); // Parse the response JSON
+                    } else {
+                        throw new Error(`Failed to withdraw complaint ${complaintId}`);
+                    }
+                })
+                .then(data => {
+                    showWithdrawSuccessModal();
+
+
+                })
+                .catch(error => {
+                    alert(`An error occurred: ${error.message}`);
+                });
+        }
+
+
+
+        function closeModal() {
+            const modal = document.getElementById('detailsModal');
+            modal.querySelector('.transform').classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+        let complaintToWithdraw = '';
+
+        function withdrawComplaint(complaintId) {
+            complaintToWithdraw = complaintId; // Store the complaint ID to withdraw
+            const modal = document.getElementById('withdrawConfirmationModal');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.querySelector('.transform').classList.remove('scale-95', 'opacity-0');
+                modal.querySelector('.transform').classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        document.getElementById('confirmWithdraw').addEventListener('click', function () {
+            if (complaintToWithdraw) {
+                proccedWithdrawComplaint(complaintToWithdraw);
+                closeWithdrawModal();
+            }
+        });
+
+        function closeWithdrawModal() {
+            const modal = document.getElementById('withdrawConfirmationModal');
+            modal.querySelector('.transform').classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+        // Function to show the success modal
+        function showWithdrawSuccessModal() {
+            const modal = document.getElementById('withdrawSuccessModal');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.querySelector('.transform').classList.remove('scale-95', 'opacity-0');
+                modal.querySelector('.transform').classList.add('scale-100', 'opacity-100');
+            }, 10);
+
+        }
+
+        // Function to close the success modal
+        function closeWithdrawSuccessModal() {
+            const modal = document.getElementById('withdrawSuccessModal');
+            modal.querySelector('.transform').classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+            fetchComplaints();
+        }
+
+        function followUp(complaintId) {
+            alert(`Follow up initiated for complaint ${complaintId}.`);
+            // Additional follow-up logic can be implemented here
+        }
+
+    </script>
+
+</body>
+
+</html>
