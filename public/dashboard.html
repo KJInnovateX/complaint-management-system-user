@@ -605,7 +605,7 @@
             // Function to fetch dashboard data
             async function fetchDashboardData() {
                 try {
-                    const response = await fetch(`http://localhost:3000/dashboard-data/${companyId}`);
+                    const response = await fetch(`/dashboard-data/${companyId}`);
                     const data = await response.json();
 
                     // Update dashboard values
