@@ -136,7 +136,7 @@
         }
 
         try {
-            const response = await fetch(`http://localhost:3000/complaint-details/${complaintId}`);
+            const response = await fetch(`/complaint-details/${complaintId}`);
             const data = await response.json();
 
             if (response.ok) {
