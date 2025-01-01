@@ -506,7 +506,7 @@
         async function fetchComplaints(search = '', status = '') {
             try {
                 // Build query parameters for search and status
-                const url = new URL(`/get-complaints/${companyId}`);
+                const url = new URL(`/get-complaints/${companyId}`,window.location.origin);
                 if (search) url.searchParams.append('search', search);
                 if (status) url.searchParams.append('status', status);
 
