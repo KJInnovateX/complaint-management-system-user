@@ -122,7 +122,7 @@ app.post('/login', (req, res) => {
     try {
       // Check if admin exists in the database
       db.query(
-        'SELECT * FROM Admin WHERE email = ? AND company_id = ?',
+        'SELECT * FROM User WHERE email = ? AND company_id = ?',
         [email, company_id],
         async (err, results) => {
           if (err) throw err;
